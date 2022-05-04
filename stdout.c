@@ -7,18 +7,25 @@
 #include "stdout.h"
 
 /* Private variables */
-static UART_HandleTypeDef *huart;
+static stdout_t hstdout;
 
 /* Private function definitions */
 static void transmit(char *str, int len)
 {
-  HAL_UART_Transmit(huart, (uint8_t*) str, len, HAL_MAX_DELAY);
+  if (NULL != hstdout.lock)
+    hstdout.lock(ENABLE);
+
+  HAL_UART_Transmit(hstdout.huart, (uint8_t*) str, len, HAL_MAX_DELAY);
+
+  if (NULL != hstdout.lock)
+    hstdout.lock(DISABLE);
 }
 
 /* Public function definitions */
-void stdout_init(UART_HandleTypeDef *uart)
+void stdout_init(UART_HandleTypeDef *uart, stdout_lock lock)
 {
-  huart = uart;
+  hstdout.huart = uart;
+  hstdout.lock = lock;
 
   /* disable stdio buffering */
   setvbuf(stdout, NULL, _IONBF, 0);

@@ -22,7 +22,7 @@ static void transmit(char *str, int len)
 }
 
 /* Public function definitions */
-void stdout_init(UART_HandleTypeDef *uart, stdout_lock lock)
+void stdout_init(UART_HandleTypeDef *uart, stdout_lock_t lock)
 {
   hstdout.huart = uart;
   hstdout.lock = lock;

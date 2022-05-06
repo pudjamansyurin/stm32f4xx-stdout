@@ -14,8 +14,8 @@ void stdout_init(stdout_writer_t writer)
 {
   hwriter = writer;
 
-  /* disable stdio buffering */
-  setvbuf(stdout, NULL, _IONBF, 0);
+  /* use line buffering */
+  setvbuf(stdout, NULL, _IOLBF, 0);
 }
 
 /* Replace weak syscalls routines */

@@ -13,14 +13,9 @@
 
 /* Exported types
  * --------------------------------------------*/
-typedef void (*stdout_lock_t)(FunctionalState lock);
-
-typedef struct {
-  UART_HandleTypeDef *huart;
-  stdout_lock_t lock;
-} stdout_t;
+typedef void (*stdout_writer_t)(char *str, int len);
 
 /* Public function declarations */
-void stdout_init(UART_HandleTypeDef *uart, stdout_lock_t lock);
+void stdout_init(stdout_writer_t writer);
 
 #endif /* STM32F4XX_TINYSH_STM32F4XX_STDOUT_STDOUT_H_ */

@@ -7,25 +7,12 @@
 #include "stdout.h"
 
 /* Private variables */
-static stdout_t hstdout;
-
-/* Private function definitions */
-static void transmit(char *str, int len)
-{
-  if (NULL != hstdout.lock)
-    hstdout.lock(ENABLE);
-
-  HAL_UART_Transmit(hstdout.huart, (uint8_t*) str, len, HAL_MAX_DELAY);
-
-  if (NULL != hstdout.lock)
-    hstdout.lock(DISABLE);
-}
+static stdout_writer_t hwriter;
 
 /* Public function definitions */
-void stdout_init(UART_HandleTypeDef *uart, stdout_lock_t lock)
+void stdout_init(stdout_writer_t writer)
 {
-  hstdout.huart = uart;
-  hstdout.lock = lock;
+  hwriter = writer;
 
   /* disable stdio buffering */
   setvbuf(stdout, NULL, _IONBF, 0);
@@ -34,12 +21,14 @@ void stdout_init(UART_HandleTypeDef *uart, stdout_lock_t lock)
 /* Replace weak syscalls routines */
 int __io_putchar(int ch)
 {
-  transmit((char*) &ch, 1);
+  if (NULL != hwriter)
+    hwriter((char*) &ch, 1);
   return (ch);
 }
 
 int _write(int file, char *ptr, int len)
 {
-  transmit(ptr, len);
+  if (NULL != hwriter)
+    hwriter(ptr, len);
   return len;
 }

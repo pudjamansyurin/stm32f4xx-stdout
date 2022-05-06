@@ -5,6 +5,11 @@
 ```c
 #include "stm32f4xx-stdout/stdout.h"
 
+static void stdout_writer(char *str, int len)
+{
+  HAL_UART_Transmit(&huart2, (uint8_t*) str, len, HAL_MAX_DELAY);
+}
+
 /* Entry Point */
 int main(void)
 {
@@ -19,7 +24,7 @@ int main(void)
   MX_USART2_UART_Init();
   
   /* Initialize serial layer, without custom lock */  
-  stdout_init(&huart2, NULL);
+  stdout_init(stdout_writer);
 
   /* Super loop */
   while(1) {
